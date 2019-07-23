@@ -14,9 +14,6 @@
         "proxy": {
           "upstreams": [
             {
-              "config": {
-                "protocol": "http"
-              },
               "destination_name": "api",
               "local_bind_port": 9091
             }
