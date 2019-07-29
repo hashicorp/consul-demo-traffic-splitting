@@ -1,5 +1,5 @@
 {
-  "Kind": "service-defaults",
-  "Name": "api",
-  "Protocol": "http"
+  "kind": "service-defaults",
+  "name": "api",
+  "protocol": "http"
 }

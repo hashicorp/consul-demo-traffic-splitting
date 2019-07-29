@@ -1,9 +1,8 @@
 {
-  "Kind": "service-resolver",
-  "Name": "api",
-  "DefaultSubset": "v1",
+  "kind": "service-resolver",
+  "name": "api",
 
-  "Subsets": {
+  "subsets": {
     "v1": {
       "filter": "Service.Meta.version == 1"
     },

@@ -1,14 +1,14 @@
 {
-  "Kind": "service-splitter",
-  "Name": "api",
-  "Splits": [
+  "kind": "service-splitter",
+  "name": "api",
+  "splits": [
     {
-      "Weight": 50,
-      "ServiceSubset": "v1"
+      "weight": 50,
+      "service_subset": "v1"
     },
     {
-      "Weight": 50,
-      "ServiceSubset": "v2"
+      "weight": 50,
+      "service_subset": "v2"
     }
   ]
 }

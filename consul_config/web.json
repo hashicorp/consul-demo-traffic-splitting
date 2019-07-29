@@ -17,7 +17,7 @@
             {
               "destination_name": "api",
               "local_bind_address": "127.0.0.1",
-              "local_bind_port": 9991
+              "local_bind_port": 9091
             }
           ]
         }
