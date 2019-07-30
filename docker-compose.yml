@@ -35,6 +35,9 @@ services:
     environment:
       CONSUL_HTTP_ADDR: 10.5.0.2:8500
       CONSUL_GRPC_ADDR: 10.5.0.2:8502
+      SERVICE_JSON: /config/web.json
+    volumes:
+      - "./service_config:/config"
     command: ["consul", "connect", "envoy","-sidecar-for", "web-v1"]
     network_mode: "service:web"
 
@@ -54,27 +57,12 @@ services:
     environment:
       CONSUL_HTTP_ADDR: 10.5.0.2:8500
       CONSUL_GRPC_ADDR: 10.5.0.2:8502
+      SERVICE_JSON: /config/api_v1.json
+    volumes:
+      - "./service_config:/config"
     command: ["consul", "connect", "envoy","-sidecar-for", "api-v1"]
     network_mode: "service:api_v1"
   
-  # Define api service and envoy sidecar proxy for version 2 of the service
-  api_v2:
-    image: nicholasjackson/upstream-echo:v0.1.8
-    environment:
-      LISTEN_ADDR: localhost:9090
-      MESSAGE: "Service V2"
-    networks:
-      vpcbr:
-        ipv4_address: 10.5.0.5
-  api_proxy_v2:
-    build:
-      context: .
-      dockerfile: Dockerfile-consul-envoy
-    environment:
-      CONSUL_HTTP_ADDR: 10.5.0.2:8500
-      CONSUL_GRPC_ADDR: 10.5.0.2:8502
-    command: ["consul", "connect", "envoy","-sidecar-for", "api-v2"]
-    network_mode: "service:api_v2"
 
 networks:
   vpcbr:

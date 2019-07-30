@@ -5,6 +5,7 @@ until consul members; do
   sleep 1
 done
 
-sleep 3
+# register the service with consul
+consul services register ${SERVICE_JSON}
 
 exec "$@"
