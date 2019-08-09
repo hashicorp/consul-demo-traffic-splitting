@@ -59,7 +59,6 @@ services:
     command: ["consul", "connect", "envoy","-sidecar-for", "api-v1"]
     network_mode: "service:api_v1"
   
-
 networks:
   vpcbr:
     driver: bridge
