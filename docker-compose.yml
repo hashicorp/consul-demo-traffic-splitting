@@ -29,9 +29,7 @@ services:
     ports:
       - 9090:9090
   web_envoy:
-    build:
-      context: .
-      dockerfile: Dockerfile-consul-envoy
+    image: nicholasjackson/consul-envoy:v1.6.0-beta3-v0.10.0
     environment:
       CONSUL_HTTP_ADDR: 10.5.0.2:8500
       CONSUL_GRPC_ADDR: 10.5.0.2:8502
@@ -51,9 +49,7 @@ services:
       vpcbr:
         ipv4_address: 10.5.0.4
   api_proxy_v1:
-    build:
-      context: .
-      dockerfile: Dockerfile-consul-envoy
+    image: nicholasjackson/consul-envoy:v1.6.0-beta3-v0.10.0
     environment:
       CONSUL_HTTP_ADDR: 10.5.0.2:8500
       CONSUL_GRPC_ADDR: 10.5.0.2:8502
