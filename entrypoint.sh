@@ -7,29 +7,47 @@ until consul members; do
 done
 
 # If we do not need to register a service just run the command
-if [ ! -z "$SERVICE_JSON" ]; then
+if [ ! -z "$SERVICE_CONFIG" ]; then
   # register the service with consul
-  echo "Registering service with consul $SERVICE_JSON"
-  consul services register ${SERVICE_JSON}
+  echo "Registering service with consul $SERVICE_CONFIG"
+  consul services register ${SERVICE_CONFIG}
   
   # make sure the service deregisters when exit
-  trap "consul services deregister ${SERVICE_JSON}" SIGINT SIGTERM EXIT
+  trap "consul services deregister ${SERVICE_CONFIG}" SIGINT SIGTERM EXIT
 fi
 
-# register any central config
+# register any central config from individual files
 if [ ! -z "$CENTRAL_CONFIG" ]; then
   IFS=';' read -r -a configs <<< ${CENTRAL_CONFIG}
 
   for i in "${configs[@]}"; do
     echo "Register central config $i"
-	  curl -XPUT -d @$i ${CONSUL_HTTP_ADDR}/v1/config 
+    consul config write $i
   done
 fi
 
-# Run the command 
-exec "$@" &
+# register any central config from a folder
+if [ ! -z "$CENTRAL_CONFIG_DIR" ]; then
+  for file in $CENTRAL_CONFIG_DIR/*; do 
+    echo "Register central config $file"
 
-# Block using tail so the trap will fire
-tail -f /dev/null &
-PID=$!
-wait $PID
+    if [[ "${file#*.}" == "hcl" ]]; then
+      consul config write $file
+    fi
+    
+    if [[ "${file#*.}" == "json" ]]; then
+	    curl -s -XPUT -d @$file ${CONSUL_HTTP_ADDR}/v1/config 
+    fi
+  done
+fi
+
+# Run the command if specified
+echo "Command: $@"
+if [ "$#" -ne 0 ]; then
+  exec "$@" &
+
+  # Block using tail so the trap will fire
+  tail -f /dev/null &
+  PID=$!
+  wait $PID
+fi

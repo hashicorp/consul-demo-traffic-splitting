@@ -33,7 +33,7 @@ services:
     environment:
       CONSUL_HTTP_ADDR: 10.5.0.2:8500
       CONSUL_GRPC_ADDR: 10.5.0.2:8502
-      SERVICE_JSON: /config/web.json
+      SERVICE_CONFIG: /config/web.json
     volumes:
       - "./service_config:/config"
     command: ["consul", "connect", "envoy","-sidecar-for", "web-v1"]
@@ -53,7 +53,7 @@ services:
     environment:
       CONSUL_HTTP_ADDR: 10.5.0.2:8500
       CONSUL_GRPC_ADDR: 10.5.0.2:8502
-      SERVICE_JSON: /config/api_v1.json
+      SERVICE_CONFIG: /config/api_v1.json
     volumes:
       - "./service_config:/config"
     command: ["consul", "connect", "envoy","-sidecar-for", "api-v1"]
