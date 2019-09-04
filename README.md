@@ -1,4 +1,4 @@
-# Consul Service Mesh - Example using Service Splitting
+ Consul Service Mesh - Example using Service Splitting
 
 ## Canary Deployments
 A Canary deployment is a technique for deploying a new version of a service, while avoiding downtime. During a canary deployment you shift a small percentage of traffic to a new version of a service while monitoring its behavior. Initially you send the smallest amount of traffic possible to the new service while still generating meaningful performance data. As you gain confidence in the new version you slowly increase the proportion of traffic it handles. Eventually, the canary version handles 100% of all traffic, at which point the old version can be completely deprecated and then removed from the environment.
@@ -95,13 +95,15 @@ The next configuration entry you need to add is the Service Resolver, which allo
 
 Service Resolvers allow you to filter for subsets of services based on information in the service registration. In this example, we are going to define the subsets “v1” and “v2” for the API service, based on its registered metadata. API service version 1 in the demo is already registered with the tags `v1` and service metadata `version:1`. When you register version 2 you will give it the tag `v2` and the metadata `version:2`. The `name` field is set to the name of the service in the Consul service catalog.
 
+Setting a `default_subset` will resolve all traffic which does not specify a `subset` destination to this value instead of allocating it amongst all subsets.
+
 The service resolver is already in your demo environment at `l7_config/api_service_resolver.json` and it looks like this.
 
 ```json
 {
   "kind": "service-resolver",
   "name": "api",
-
+  "default_subset": "v1",
   "subsets": {
     "v1": {
       "filter": "Service.Meta.version == 1"
