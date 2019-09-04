@@ -1,6 +1,6 @@
 FROM consul:latest
 
-RUN wget https://releases.hashicorp.com/consul/1.6.0-beta2/consul_1.6.0-beta2_linux_amd64.zip -O /tmp/consul.zip
+RUN wget https://releases.hashicorp.com/consul/1.6.0/consul_1.6.0_linux_amd64.zip -O /tmp/consul.zip
 RUN unzip /tmp/consul.zip -d /tmp
 RUN mv /tmp/consul /usr/local/bin/consul
 

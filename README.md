@@ -1,4 +1,4 @@
-# Consul Service Mesh - Example using Service Splitting
+ Consul Service Mesh - Example using Service Splitting
 
 ## Canary Deployments
 A Canary deployment is a technique for deploying a new version of a service, while avoiding downtime. During a canary deployment you shift a small percentage of traffic to a new version of a service while monitoring its behavior. Initially you send the smallest amount of traffic possible to the new service while still generating meaningful performance data. As you gain confidence in the new version you slowly increase the proportion of traffic it handles. Eventually, the canary version handles 100% of all traffic, at which point the old version can be completely deprecated and then removed from the environment.
@@ -95,13 +95,15 @@ The next configuration entry you need to add is the Service Resolver, which allo
 
 Service Resolvers allow you to filter for subsets of services based on information in the service registration. In this example, we are going to define the subsets “v1” and “v2” for the API service, based on its registered metadata. API service version 1 in the demo is already registered with the tags `v1` and service metadata `version:1`. When you register version 2 you will give it the tag `v2` and the metadata `version:2`. The `name` field is set to the name of the service in the Consul service catalog.
 
+Setting a `default_subset` will resolve all traffic which does not specify a `subset` destination to this value instead of allocating it amongst all subsets.
+
 The service resolver is already in your demo environment at `l7_config/api_service_resolver.json` and it looks like this.
 
 ```json
 {
   "kind": "service-resolver",
   "name": "api",
-
+  "default_subset": "v1",
   "subsets": {
     "v1": {
       "filter": "Service.Meta.version == 1"
@@ -164,6 +166,56 @@ $ docker-compose -f docker-compose-v2.yml up
 ```
 
 Check that the service and its proxy have registered by looking for a new `v2` tags next to the API service and API sidecar proxies in the Consul UI.  
+
+### Configure Service Routing - allow targeted traffic to Version 2
+
+Next you'll configure a route to manually test sending traffic to your v2 service before sending production traffic to a canary deployment.
+
+The service splitter configuration already exists in your demo environment at `l7_config/api_service_router.json` and looks like this.
+
+TODO: Test header, query string and path matching or just show one example?
+
+```json
+{
+  "kind": "service-router",
+  "name": "api",
+  "routes": [
+    {
+      "match": {
+        "http": {
+          "path_prefix": "/v2"
+        }
+      },
+      "destination": {
+        "service": "api",
+        "service_subset": "v2"
+      }
+    }
+  ]
+}
+```
+
+Apply this configuration entry by issuing another PUT request to the Consul’s configuration entry endpoint of the HTTP API.
+
+```shell
+$ curl localhost:8500/v1/config -XPUT -d @l7_config/api_service_router.json
+true%
+``` 
+
+Now, test the root and `/v2` paths to see how requests are routed to each service.
+
+```
+$ curl localhost:9090
+Hello World
+###Upstream Data: localhost:9091###
+  Service V1%
+$ curl localhost:9090/v2
+Hello World
+###Upstream Data: localhost:9091###
+  Service V2%
+```
+
+FIXME: The `/v2` requests are still being routed to `Service V1` when testing - why?
 
 ### Configure Service Splitting - 50% Version 1, 50% Version 2
 Now that version 2 is running and registered, the next step is to gradually increase traffic to it by changing the weight of the v2 service subset in the service splitter configuration. Let’s increase the weight of the v2 service to 50%. Remember; total service weight must equal 100, so you also reduce the weight of the v1 subset to 50. The configuration file is already in your demo environment at `l7_config/api_service_splitter_50_50.json` and it looks like this.
