@@ -167,6 +167,56 @@ $ docker-compose -f docker-compose-v2.yml up
 
 Check that the service and its proxy have registered by looking for a new `v2` tags next to the API service and API sidecar proxies in the Consul UI.  
 
+### Configure Service Routing - allow targeted traffic to Version 2
+
+Next you'll configure a route to manually test sending traffic to your v2 service before sending production traffic to a canary deployment.
+
+The service splitter configuration already exists in your demo environment at `l7_config/api_service_router.json` and looks like this.
+
+TODO: Test header, query string and path matching or just show one example?
+
+```json
+{
+  "kind": "service-router",
+  "name": "api",
+  "routes": [
+    {
+      "match": {
+        "http": {
+          "path_prefix": "/v2"
+        }
+      },
+      "destination": {
+        "service": "api",
+        "service_subset": "v2"
+      }
+    }
+  ]
+}
+```
+
+Apply this configuration entry by issuing another PUT request to the Consul’s configuration entry endpoint of the HTTP API.
+
+```shell
+$ curl localhost:8500/v1/config -XPUT -d @l7_config/api_service_router.json
+true%
+``` 
+
+Now, test the root and `/v2` paths to see how requests are routed to each service.
+
+```
+$ curl localhost:9090
+Hello World
+###Upstream Data: localhost:9091###
+  Service V1%
+$ curl localhost:9090/v2
+Hello World
+###Upstream Data: localhost:9091###
+  Service V2%
+```
+
+FIXME: The `/v2` requests are still being routed to `Service V1` when testing - why?
+
 ### Configure Service Splitting - 50% Version 1, 50% Version 2
 Now that version 2 is running and registered, the next step is to gradually increase traffic to it by changing the weight of the v2 service subset in the service splitter configuration. Let’s increase the weight of the v2 service to 50%. Remember; total service weight must equal 100, so you also reduce the weight of the v1 subset to 50. The configuration file is already in your demo environment at `l7_config/api_service_splitter_50_50.json` and it looks like this.
 
