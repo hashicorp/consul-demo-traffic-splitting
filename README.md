@@ -117,7 +117,7 @@ Apply the service resolver configuration entry using the same method you used in
 
 ```shell
 $ curl localhost:8500/v1/config -XPUT -d @l7_config/api_service_resolver.json
-true% 
+true%
 ```
 
 For more information about service resolvers see the [documentation](https://www.consul.io/docs/agent/config-entries/service-resolver.html).
@@ -151,9 +151,9 @@ Apply this configuration entry by issuing another PUT request to the Consul’s 
 ```shell
 $ curl localhost:8500/v1/config -XPUT -d @l7_config/api_service_splitter_100_0.json
 true%
-``` 
+```
 
-This scenario is the first stage in our Canary deployment; you can now launch the new version of your service without it immediately being used by the upstream load balancing group. 
+This scenario is the first stage in our Canary deployment; you can now launch the new version of your service without it immediately being used by the upstream load balancing group.
 
 ### Start and Register API Service Version 2
 
@@ -206,10 +206,10 @@ Hello World
 $ curl localhost:9090
 Hello World
 ###Upstream Data: localhost:9091###
-  Service V1% 
+  Service V1%
 ```
 
-If you were actually performing a canary deployment you would want to choose a much smaller percentage for your initial split: the smallest possible percentage that would give you reliable data on service performance. You would then slowly increase the percentage by iterating over this step as you gained confidence in version 2 of your service. Some companies may eventually choose to automate the ramp up based on preset performance thresholds. 
+If you were actually performing a canary deployment you would want to choose a much smaller percentage for your initial split: the smallest possible percentage that would give you reliable data on service performance. You would then slowly increase the percentage by iterating over this step as you gained confidence in version 2 of your service. Some companies may eventually choose to automate the ramp up based on preset performance thresholds.
 
 ### Configure Service Splitting - 100% Version 2
 Once you are confident that the new version of the service is operating correctly, you can send 100% of traffic to the version 2 subset. The configuration for a 100% split to version 2 looks like this.
@@ -255,7 +255,7 @@ Hello World
   Service V2%
 ```
 
-Typically in a production environment, you would now remove the version 1 service to release capacity in your cluster. Congratulations, you’ve now completed the deployment of version 2 of your service. 
+Typically in a production environment, you would now remove the version 1 service to release capacity in your cluster. Congratulations, you’ve now completed the deployment of version 2 of your service.
 
 ## Clean up
 
@@ -273,7 +273,7 @@ Removing consul-demo-traffic-splitting_api_v2_1       ... done
 Network consul-demo-traffic-splitting_vpcbr is external, skipping
 ```
 
-Then, you’ll stop and remove the containers and the network that you created in the first docker compose command. 
+Then, you’ll stop and remove the containers and the network that you created in the first docker compose command.
 
 ```shell
 $ docker-compose down
@@ -291,8 +291,8 @@ Removing network consul-demo-traffic-splitting_vpcbr
 ```
 ## Summary
 
-In this blog, we walked you through the steps required to perform Canary deployments using traffic splitting and resolution. For more in-depth information on Canary deployments, Danilo Sato has written an [excellent article](https://martinfowler.com/bliki/CanaryRelease.html) on Martin Fowler's website. 
+In this blog, we walked you through the steps required to perform Canary deployments using traffic splitting and resolution. For more in-depth information on Canary deployments, Danilo Sato has written an [excellent article](https://martinfowler.com/bliki/CanaryRelease.html) on Martin Fowler's website.
 
-The advanced L7 traffic management in 1.6.0 is not limited to splitting. It also includes HTTP based routing and new settings for service resolution. In combination, these features enable sophisticated traffic routing and service failover. All the new L7 traffic management settings can be found in the [documentation](https://www.consul.io/docs/connect/l7-traffic-management.html). If you’d like to go farther, combine it with our guide on and [L7 Observability](https://learn.hashicorp.com/consul/developer-mesh/l7-observability-k8s) to implement some of the monitoring needed for new service deployments. 
+The advanced L7 traffic management in 1.6.x is not limited to splitting. It also includes HTTP based routing and new settings for service resolution. In combination, these features enable sophisticated traffic routing and service failover. All the new L7 traffic management settings can be found in the [documentation](https://www.consul.io/docs/connect/l7-traffic-management.html). If you’d like to go farther, combine it with our guide on and [L7 Observability](https://learn.hashicorp.com/consul/developer-mesh/l7-observability-k8s) to implement some of the monitoring needed for new service deployments. 
 
 Please keep in mind that [Consul 1.6 RC](https://www.consul.io/downloads.html) isn’t suited for production deployments. We’d appreciate any feedback or bug reports you have in our [GitHub issues](https://github.com/hashicorp/consul/issues), and you’re welcome to ask questions in our new [community forum](https://discuss.hashicorp.com/c/consul).
